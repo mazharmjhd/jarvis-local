@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. — Localhost</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="hud-grid"></div>
+    <div class="hud-scanline"></div>
+    <div class="hud-sweep"></div>
+
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="hud-label top-left">SYS.LINK // ACTIVE</div>
+    <div class="hud-label top-right">WS://127.0.0.1:8000</div>
+    <div class="hud-label bottom-left">MODEL // QWEN2.5-3B</div>
+    <div class="hud-label bottom-right">STARK-CLASS INTERFACE</div>
+
+    <main class="jarvis-container">
+        <div class="console-header">
+            <div>
+                <h1>J.A.R.V.I.S.</h1>
+                <div class="subtitle">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+            </div>
+            <div id="clock">00:00:00</div>
+        </div>
+
+        <div class="core-stage">
+            <div class="reactor-wrap">
+                <div class="ring r1"></div>
+                <div class="ring r2"></div>
+                <div class="ring r3"></div>
+                <div class="arc-reactor" id="jarvis-core">
+                    <div class="core-inner"></div>
+                </div>
+            </div>
+        </div>
+        <p id="status-text">JARVIS: STANDBY</p>
+
+        <div class="chat-log" id="chat-log">
+            <div class="bot-msg">Sistem siap, Tuan. Ada yang bisa saya bantu?</div>
+        </div>
+
+        <div class="input-panel">
+            <input type="text" id="user-input" placeholder="Masukkan perintah teks di sini...">
+            <button id="btn-kirim">KIRIM</button>
+            <button id="btn-bicara">MIC</button>
+        </div>
+    </main>
+
+    <script>
+        // Jam realtime di pojok kanan atas panel — murni kosmetik
+        function updateClock() {
+            const now = new Date();
+            const el = document.getElementById('clock');
+            if (el) el.innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+    <script src="app.js"></script>
+</body>
+</html>

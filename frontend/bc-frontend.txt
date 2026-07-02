@@ -1,0 +1,329 @@
+ini di folder frontend
+
+apps.js
+
+// Hubungkan ke server Python lokal lewat WebSocket
+const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
+const jarvisCore = document.getElementById("jarvis-core");
+const statusText = document.getElementById("status-text");
+const chatLog = document.getElementById("chat-log");
+const userInput = document.getElementById("user-input");
+const btnKirim = document.getElementById("btn-kirim");
+const btnBicara = document.getElementById("btn-bicara");
+
+// Fitur Pengenalan Suara Bawaan Web Browser (Sangat Ringan)
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "id-ID"; // Format Bahasa Indonesia
+    
+    recognition.onstart = () => {
+        updateStatus("MENDENGARKAN...", "berbicara");
+    };
+    
+    recognition.onresult = (event) => {
+        const hasilSuara = event.results[0][0].transcript;
+        appendChat(hasilSuara, "user-msg");
+        kirimKeBackend(hasilSuara);
+    };
+
+    recognition.onerror = () => {
+        updateStatus("JARVIS: STANDBY", "");
+    };
+}
+
+// Menangani pesan balik dari Python Backend
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    
+    if (data.status === "berpikir") {
+        updateStatus("JARVIS SEDANG BERPIKIR...", "berpikir");
+    } else if (data.status === "berbicara") {
+        updateStatus("JARVIS: BERBICARA", "berbicara");
+        appendChat(data.respons, "bot-msg");
+        suarakanTeks(data.respons);
+    }
+};
+
+function kirimKeBackend(teks) {
+    if (teks.trim() !== "") {
+        socket.send(JSON.stringify({ pesan: teks }));
+    }
+}
+
+// Fungsi Sintesis Suara (Text-To-Speech bawaan browser Mac)
+function suarakanTeks(teks) {
+    const speech = new SpeechSynthesisUtterance(teks);
+    speech.lang = "id-ID";
+    speech.onend = () => {
+        updateStatus("JARVIS: STANDBY", "");
+    };
+    window.speechSynthesis.speak(speech);
+}
+
+function updateStatus(label, kelasAnimasi) {
+    statusText.innerText = label;
+    jarvisCore.className = "arc-reactor " + kelasAnimasi;
+}
+
+function appendChat(teks, tipeKelas) {
+    const div = document.createElement("div");
+    div.className = tipeKelas;
+    div.innerText = teks;
+    chatLog.appendChild(div);
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+// Event Listener Tombol
+btnKirim.addEventListener("click", () => {
+    const teks = userInput.value;
+    if(teks) {
+        appendChat(teks, "user-msg");
+        kirimKeBackend(teks);
+        userInput.value = "";
+    }
+});
+
+btnBicara.addEventListener("click", () => {
+    if (recognition) recognition.start();
+    else alert("Browser Anda tidak mendukung pengenalan suara.");
+});
+
+style.css
+
+body {
+    background-color: #020813;
+    color: #00f3ff;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.jarvis-container {
+    width: 450px;
+    background: rgba(4, 19, 41, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid #00f3ff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    text-align: center;
+}
+
+/* Animasi Lingkaran Inti Jarvis */
+.arc-reactor-container {
+    margin-bottom: 25px;
+}
+
+.arc-reactor {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px dashed #00f3ff;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: putar 6s linear infinite;
+    transition: all 0.5s ease;
+}
+
+.core-inner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00f3ff 0%, transparent 70%);
+    box-shadow: 0 0 20px #00f3ff;
+}
+
+/* Mengubah animasi berdasarkan status */
+.arc-reactor.berpikir {
+    border-color: #ffaa00;
+    animation: putar 1s linear infinite;
+}
+
+.arc-reactor.berbicara {
+    border-color: #00ff66;
+    transform: scale(1.1);
+}
+
+@keyframes putar {
+    100% { transform: rotate(360deg); }
+}
+
+#status-text {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px #00f3ff;
+}
+
+/* Log Chat */
+.chat-log {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.user-msg { color: #ffffff; margin-bottom: 8px; }
+.bot-msg { color: #00f3ff; margin-bottom: 8px; text-shadow: 0 0 4px rgba(0, 243, 255, 0.4); }
+
+/* Input */
+.input-panel {
+    display: flex;
+    gap: 5px;
+}
+
+input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00f3ff;
+    padding: 10px;
+    color: #fff;
+    border-radius: 4px;
+}
+
+button {
+    background: transparent;
+    border: 1px solid #00f3ff;
+    color: #00f3ff;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #00f3ff;
+    color: #000;
+    box-shadow: 0 0 10px #00f3ff;
+}
+
+index.html
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS OS - Localhost</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="jarvis-container">
+        <div class="arc-reactor-container">
+            <div class="arc-reactor" id="jarvis-core">
+                <div class="core-inner"></div>
+            </div>
+            <p id="status-text">JARVIS: STANDBY</p>
+        </div>
+
+        <div class="chat-log" id="chat-log">
+            <div class="bot-msg">Sistem siap, Tuan. Ada yang bisa saya bantu?</div>
+        </div>
+
+        <div class="input-panel">
+            <input type="text" id="user-input" placeholder="Masukkan perintah teks di sini...">
+            <button id="btn-kirim">KIRIM</button>
+            <button id="btn-bicara">MIC</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+dan ini di folder Backend
+
+main.py
+
+import json
+import requests
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Mengizinkan koneksi dari frontend browser
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
+
+def tanya_ollama(prompt: str) -> str:
+    """Fungsi untuk mengirim teks ke model AI lokal"""
+    payload = {
+        "model": "qwen2.5:3b",
+        "prompt": prompt,
+        "stream": False
+    }
+    try:
+        response = requests.post(OLLAMA_URL, json=payload, timeout=30)
+        if response.status_code == 200:
+            return response.json().get("response", "Maaf, saya tidak mendapatkan respons.")
+        else:
+            return f"Ollama merespon dengan kode error: {response.status_code}"
+    except Exception as e:
+        return f"Gagal terhubung ke otak AI (Pastikan Ollama sudah aktif): {str(e)}"
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    print("\n[INFO] Frontend Jarvis Terhubung ke WebSocket.")
+    try:
+        while True:
+            # Menerima data dari JavaScript
+            data = await websocket.receive_text()
+            request_data = json.loads(data)
+            pesan_user = request_data.get("pesan", "")
+            
+            if not pesan_user.strip():
+                continue
+                
+            print(f"[USER]: {pesan_user}")
+            
+            # 1. Kirim status ke JS bahwa Jarvis sedang berpikir
+            await websocket.send_text(json.dumps({"status": "berpikir", "respons": ""}))
+            
+            # 2. Ambil jawaban dari AI lokal
+            jawaban_ai = tanya_ollama(pesan_user)
+            
+            print(f"[JARVIS]: {jawaban_ai}")
+            
+            # 3. Kirim kembali jawaban ke JS untuk ditampilkan dan disuarakan
+            await websocket.send_text(json.dumps({"status": "berbicara", "respons": jawaban_ai}))
+            
+    except WebSocketDisconnect:
+        print("[INFO] Frontend Jarvis Terputus dari WebSocket.")
+    except Exception as e:
+        print(f"[ERROR]: Terjadi masalah pada WebSocket: {str(e)}")
+
+# PENTING: Baris ini harus menempel di kiri bodi file (tanpa spasi/tab di depannya)
+if __name__ == "__main__":
+    import uvicorn
+    print("[STARTING] Menjalankan server Jarvis di localhost port 8000...")
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
+requirements.txt
+
+fastapi==0.111.0
+uvicorn==0.30.1
+websockets==12.0
+requests==2.32.3
