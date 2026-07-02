@@ -77,7 +77,7 @@ Buka folder frontend di file explorer komputer Anda.
 
 Klik dua kali pada file index.html untuk membukanya langsung di Google Chrome atau Microsoft Edge.
 
-Alternatif Profesional: Jika Anda menggunakan VS Code, Anda bisa menginstal ekstensi Live Server, kemudian klik kanan pada file index.html dan pilih Open with Live Server (berjalan di http://127.0.0.1:5500).
+Alternatif Profesional: Jika Anda menggunakan VS Code, Anda bisa menginstal ekstensi Live Server, kemudian klik kanan pada file index.html dan pilih Open with Live Server (berjalan di http://127.0.0.1:5500) atau tinggal klick saja di folder frontend index.html nya jika backend sudah berjalan (untuk menampilkan GUI/ tampilan di web browser).
 
 Cara Penggunaan Sistem
 Saat halaman index.html terbuka, status indikator luar reaktor akan berwarna Cyan terang dengan label teks JARVIS: STANDBY.
@@ -92,6 +92,7 @@ Ketika jawaban diterima, J.A.R.V.I.S. akan merespons dalam bentuk teks ke log ch
 
 Struktur Repositori Proyek
 
+
 Plaintext
 jarvis-local/
 │
@@ -103,6 +104,7 @@ jarvis-local/
     ├── index.html          # Struktur HUD interface bergaya Stark-Class
     ├── style.css           # Desain animasi reaktor, scanline efek, & grid panel
     └── app.js              # Logika koneksi WebSocket client & Web Speech API
+
 
 Tips Tambahan Sebelum Commit ke GitHub:
 1. Pastikan Anda meletakkan file tersebut dengan nama **`README.md`** tepat di dalam folder root (`jarvis-local/`), bukan di dalam folder backend atau frontend.
