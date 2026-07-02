@@ -1,3 +1,6 @@
+<img width="1430" height="686" alt="image" src="https://github.com/user-attachments/assets/d7e02745-97b2-47f4-80c0-18a6b969753e" />
+
+
 J.A.R.V.I.S. — Localhost Voice Assistant
 
 J.A.R.V.I.S. (Just A Rather Very Intelligent System) adalah asisten AI pribadi lokal berbasis web interface futuristik (Stark-Class HUD Interface). Proyek ini mengintegrasikan **FastAPI WebSocket** di backend untuk menangani komunikasi data secara *real-time*, **Ollama (Model: Qwen2.5:3b)** sebagai otak pemrosesan bahasa lokal, dan fitur bawaan browser **Web Speech API** untuk interaksi berbasis suara (*Speech-to-Text* & *Text-to-Speech*).
